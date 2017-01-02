@@ -1,0 +1,25 @@
+{"acids":
+	"name":"Babassu",
+	"cuts":{
+			"saturateds":{
+				"cutsNames":["Caprylic","Capric", "Lauric","Myristic","Palmitic", "Stearic"],
+				"cutsPercent":[5.0,4.4,45.0,16.2,9.9,4.1]
+			},
+			"insaturateds":{
+				"cutsNames":,
+				"cutsPercent":
+			},
+	}
+	"iodineValues":{
+		"low":,
+		"high":
+	}
+	"saponificationValues":{
+		"low":,
+		"high":
+	}
+	"titer":{
+		"low":,
+		"high":
+	}
+}

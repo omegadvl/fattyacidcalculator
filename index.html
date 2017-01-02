@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="css/foundation.css">
     <link rel="stylesheet" href="css/app.css">
     <script src="plugins/node_modules/chart.js/dist/Chart.js"></script>
+    <script src="js/vendor/jquery.js"></script>
   </head>
   <body>
   	
@@ -41,9 +42,9 @@
 
         <div class="row">
           <div class="large-8 columns">
-            <div class="primary ">
+            <div id="primaryChart" class="primary chartDin">
              <!-- AQUIIIIIIII -->
-             <canvas id="myChart" >DSADSA</canvas>
+             <canvas id="completeChart" class="">DSADSA</canvas>
              <br />
             </div>
           </div>
@@ -51,18 +52,17 @@
        </div>
        <div class="large-4 medium-4 columns">
         <h5>Try one of these buttons:</h5>
-	      <select>
-	        <option value="husker">Husker</option>
+	      <select id="acids">
+	        <!--<option value="husker">Husker</option>
 	        <option value="starbuck">Starbuck</option>
 	        <option value="hotdog">Hot Dog</option>
-	        <option value="apollo">Apollo</option>
+	        <option value="apollo">Apollo</option> -->
 	      </select>
-        <p><a href="#" class="button">Simple Button</a><br/>
+        <p><a href="#" class="button chooseAcid">Aplicar</a><br/>
         
         <div class="callout">
-          <h5>So many components, girl!</h5>
-          <p>A whole kitchen sink of goodies comes with Foundation. Check out the docs to see them all, along with details on making them your own.</p>
-          <a href="http://foundation.zurb.com/sites/docs/" class="small button">Go to Foundation Docs</a>
+          <div class="information"></div>          
+         <!-- <a href="http://foundation.zurb.com/sites/docs/" class="small button">Go to Foundation Docs</a> -->
         </div>
       </div>
      </div>
@@ -70,13 +70,13 @@
       <div class="row">
         <div class="row">
           <div class="large-6 medium-6 columns">
-            <div class=" callout">
-              <canvas id="saturados" >DSADSAas</canvas>
+            <div class=" callout chartDin">
+              <canvas id="saturados" class="chartDin">DSADSAas</canvas>
             </div>
           </div>
           <div class="large-6 medium-6 columns">
-            <div class="callout">
-              <canvas id="insaturados" >DSADSA</canvas>
+            <div class="callout chartDin">
+              <canvas id="insaturados" class="chartDin">DSADSA</canvas>
             </div>
           </div>
         </div>        
@@ -84,45 +84,109 @@
       <div class="row">
         <div class="row">
           <div class="large-12 medium-12 columns">
-            <div class=" callout">
+            <div class=" callout chartDin">
               <canvas id="iodine" >DSADSA</canvas>
             </div>
           </div>
         </div>        
       </div>
+<style>
+	ul.listaAcids {
+		list-style-type: none;
+	}	
+	
+</style>
+    
+    <script>
+    	function primaryChart (position, dataObj) {
+    		//console.log(dataObj.acids.acid[position].cuts.insaturateds.cutsPercent);
+    		dataVal = $.merge(dataObj.acids.acid[position].cuts.insaturateds.cutsPercent, dataObj.acids.acid[position].cuts.saturateds.cutsPercent);
+    		labelsVal = $.merge(dataObj.acids.acid[position].cuts.insaturateds.cutsNames,dataObj.acids.acid[position].cuts.saturateds.cutsNames);
+    		
+	      	var ctx = document.getElementById("completeChart");
+			var myChart = new Chart(ctx, {
+			    type: 'polarArea',
+			    data: {
+			       datasets: [{
+						        data: dataVal,
+						        backgroundColor: [
+						            "#FF6384",
+						            "#4BC0C0",
+						            "#FFCE56",
+						            "#C08497",
+						            "#36A2EB",
+						            "#17301C",
+						            "#744FC6",
+						            "#4FB0C6",
+						            "#81E979",
+						            "#87255B",
+						            "#DE541E" 
+						            ],
+						        label: 'My dataset' // for legend
+						    }],
+						    labels: labelsVal
+			       }
+				});
+    		}
+    		function geraFicha (position, dataObj) {
+    			$( ".information" ).empty();
+    			
+    			$( ".information" ).append( '<h5>Unsaturated cuts</h5>');
+    			$( ".information" ).append('<ul class="listaAcidsUnsatur"></ul>');    			
+  			
+				for(var i=0,j=dataObj.acids.acid[position].cuts.insaturateds.cutsNames.length; i<j; i++){
+		
+					name = dataObj.acids.acid[position].cuts.insaturateds.cutsNames[i];
+					percent = dataObj.acids.acid[position].cuts.insaturateds.cutsPercent[i];
+					$( ".listaAcidsUnsatur" ).append( '<li>'+name+': '+percent+'</li>' );
+				}
 
+				$( ".information" ).append( '<h5>Saturated cuts</h5>');
+    			$( ".information" ).append('<ul class="listaAcidsSatur"></ul>');
+				for(var i=0,j=dataObj.acids.acid[position].cuts.saturateds.cutsNames.length; i<j; i++){
+					name = dataObj.acids.acid[position].cuts.saturateds.cutsNames[i];
+					percent = dataObj.acids.acid[position].cuts.saturateds.cutsPercent[i];
+					$( ".listaAcidsSatur" ).append( '<li>'+name+': '+percent+'</li>' );
+				}
+				
+
+			}
+    	
+    </script>
       
     <script>
-	var ctx = document.getElementById("myChart");
-	var myChart = new Chart(ctx, {
-	    type: 'polarArea',
-	    data: {
-	       datasets: [{
-				        data: [
-				            11,
-				            16,
-				            7,
-				            3,
-				            14
-				        ],
-				        backgroundColor: [
-				            "#FF6384",
-				            "#4BC0C0",
-				            "#FFCE56",
-				            "#E7E9ED",
-				            "#36A2EB"
-				        ],
-				        label: 'My dataset' // for legend
-				    }],
-				    labels: [
-				        "Red",
-				        "Green",
-				        "Yellow",
-				        "Grey",
-				        "Blue"
-				    ]
-	       }
+    $( document ).ready(function() {
+	    $.getJSON("data/acids.json", function(data){
+	    	console.log(data);
+	    	for(var i=0,j=data.acids.acid.length; i<j; i++){			 
+			  $( "#acids" ).append( '<option value="'+i+'">'+data.acids.acid[i].name+'</option>' );
+			  
+			};
+	    });
+	     $.getJSON("data/acids.json", function(data){
+	     	var position = 0;
+	     	geraFicha(position, data);	    	    
+	    	primaryChart(position, data);
+	    	
+	     });
+	    
+	    
+
+	    $( ".chooseAcid" ).click(function() {
+		  //alert( "inicio" );
+		  var position = $("#acids").val();
+		  $( "#primaryChart" ).empty();
+		  $( "#primaryChart" ).append( '<canvas id="completeChart" class="chartDin">DSADSAas</canvas>');
+		  $.getJSON("data/acids.json", function(data){
+		  	geraFicha(position, data);	     	    	    
+	    	primaryChart(position, data);
+	     });
+		});
+	    
 	});
+    
+    
+	
 	</script>
 	
 	<script>
@@ -251,9 +315,9 @@
 	});
 	</script>
 	
-	
 
-    <script src="js/vendor/jquery.js"></script>
+
+    
     <script src="js/vendor/what-input.js"></script>
     <script src="js/vendor/foundation.js"></script>
     <script src="js/app.js"></script>
